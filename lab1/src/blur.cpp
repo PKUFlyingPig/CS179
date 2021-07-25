@@ -35,23 +35,7 @@ float gaussian(float x, float mean, float std) {
         * exp(-1.0 / 2.0 * pow((x - mean) / std, 2));
 }
 
-/*
- * NOTE: You can use this macro to easily check cuda error codes 
- * and get more information. 
- * 
- * Modified from:
- * http://stackoverflow.com/questions/14038589/
- *   what-is-the-canonical-way-to-check-for-errors-using-the-cuda-runtime-api
- */
-#define gpu_errchk(ans) { gpu_assert((ans), __FILE__, __LINE__); }
-inline void gpu_assert(cudaError_t code, const char *file, int line,
-                       bool abort = true) {
-    if (code != cudaSuccess) {
-        fprintf(stderr, "gpu_assert: %s %s %d\n",
-                cudaGetErrorString(code), file, line);
-        exit(code);
-    }
-}
+
 
 /* Checks the passed-in arguments for validity. */
 void check_args(int argc, char **argv) {
