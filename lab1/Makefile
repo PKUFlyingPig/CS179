@@ -30,13 +30,7 @@ NVCC_FLAGS += -g -dc -Wno-deprecated-gpu-targets --std=c++11 \
              --expt-relaxed-constexpr
 NVCC_INCLUDE =
 NVCC_LIBS = 
-NVCC_GENCODES = -gencode arch=compute_30,code=sm_30 \
-		-gencode arch=compute_35,code=sm_35 \
-		-gencode arch=compute_50,code=sm_50 \
-		-gencode arch=compute_52,code=sm_52 \
-		-gencode arch=compute_60,code=sm_60 \
-		-gencode arch=compute_61,code=sm_61 \
-		-gencode arch=compute_61,code=compute_61
+NVCC_GENCODES = -arch=sm_80
 
 # CUDA Object Files
 CUDA_OBJ_FILES = $(notdir $(addsuffix .o, $(CUDA_FILES)))
