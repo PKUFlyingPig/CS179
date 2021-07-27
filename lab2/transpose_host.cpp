@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     // Please leave these enabled as a courtesy to your fellow classmates
     // if you are using a shared computer. You may ignore or remove these 
     // functions if you are running on your local machine.
-    TA_Utilities::select_coldest_GPU();
+    // TA_Utilities::select_coldest_GPU();
     int max_time_allowed_in_seconds = 10;
     TA_Utilities::enforce_time_limit(max_time_allowed_in_seconds);
     

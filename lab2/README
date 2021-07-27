@@ -1,0 +1,123 @@
+CS 179: GPU Computing
+Lab 2: Matrix transpose
+Name: FlyingPig
+
+==============================================================================================
+Question 1.1: Latency Hiding (5 points)
+==============================================================================================
+
+--------------------------------------------------------------------------------------------------
+1.1
+Answer : The latency of an arithmetic instruction is 10 cycles, and a GK110 can issue 
+8 instructions per cycle (4 warp schedulers, 2 ILP). So to hide latency, it needs 80 instructions.
+--------------------------------------------------------------------------------------------------
+
+==============================================================================================
+Question 1.2: Thread Divergence (6 points)
+==============================================================================================
+
+--------------------------------------------------------------------------------------------------
+1.2
+(a) 
+Answer : This code will not diverge, because the index of the threads in one warp are the same (mode 32).
+So they will execute foo() or bar() together.
+
+(b)
+Answer : This code diverges in my view because all the thread in this warp will execute 32 loops even 
+though many of them do not need to.
+--------------------------------------------------------------------------------------------------
+
+==============================================================================================
+Question 1.3: Coalesced Memory Access (9 points)
+==============================================================================================
+
+--------------------------------------------------------------------------------------------------
+1.3
+(a)
+Answer : This write is coalesced. The threads in the warp write in the same cache line, so this writes
+to only one cache line.
+
+(b)
+Answer : This write is not coalesced. The threads in the warp access the data with step 32 * 4 = 128 bytes, 
+so this writes to 32 /(128 / 128) = 32 cache lines.
+
+(c)
+Answer : This write is not coalesced. This writes to two cache lines.
+--------------------------------------------------------------------------------------------------
+
+
+==============================================================================================
+Question 1.4: Bank Conflicts and Instruction Dependencies (15 points)
+==============================================================================================
+
+
+--------------------------------------------------------------------------------------------------
+1.4
+(a) 
+Answer : 
+    There are no bank conflicts in this code.
+
+(b)
+Answer :
+    lhs0 = lhs[i + 32 * k];
+    rhs0 = rhs[k + 128 * j];
+    O0 = output[i + 32 * j];
+    FMA on lhs0, rhs0, O0;
+    Write O0 to output[i + 32 * j];
+
+    lhs1 = lhs[i + 32 * (k + 1)];
+    rhs1 = rhs[(k + 1) + 128 * j];
+    O1 = output[i + 32 * j];
+    FMA on lhs1, rhs1, O1;
+    Write O1 to output[i + 32 * j];
+
+
+(c)
+Answer :
+“Write O0 to output[i + 32 * j];” depends on “FMA on lhs0, rhs0, O0;”. “Write O1 to output[i + 32 * j];” depends on “FMA on lhs1, rhs1, O1;”. “FMA on lhs0, rhs0, O0;” depends on “lhs0, rhs0, and O0”. “FMA on lhs1, rhs1, O1;” depends on “lhs1, rhs1, and O1”. 
+
+
+(d)
+Answer : 
+    lhs0 = lhs[i + 32 * k];
+    rhs0 = rhs[k + 128 * j];
+    lhs1 = lhs[i + 32 * (k + 1)];
+    rhs1 = rhs[(k + 1) + 128 * j];
+    O = output[i + 32 * j];
+    FMA on lhs0, rhs0, O;
+    FMA on lhs1, rhs1, O;
+    Write O to output[i + 32 * j];
+
+(e)
+Answer : 
+    Why stop at two values of k? Let’s repeat (d), but use more values of k (say, processing 4 values of k rather than 2 by doing k, (k + 1), (k + 2), (k + 3)). 
+
+==============================================================================================
+PART 2 - Matrix transpose optimization (65 points)
+==============================================================================================
+
+Time limit for this program set to 10 seconds
+Size 512 naive CPU: 0.813824 ms
+Size 512 GPU memcpy: 0.031040 ms
+Size 512 naive GPU: 0.027648 ms
+Size 512 shmem GPU: 0.014336 ms
+Size 512 optimal GPU: 0.012288 ms
+
+Size 1024 naive CPU: 5.030336 ms
+Size 1024 GPU memcpy: 0.025984 ms
+Size 1024 naive GPU: 0.062464 ms
+Size 1024 shmem GPU: 0.017408 ms
+Size 1024 optimal GPU: 0.016384 ms
+
+Size 2048 naive CPU: 37.009247 ms
+Size 2048 GPU memcpy: 0.054976 ms
+Size 2048 naive GPU: 0.199680 ms
+Size 2048 shmem GPU: 0.039936 ms
+Size 2048 optimal GPU: 0.038912 ms
+
+Size 4096 naive CPU: 205.390747 ms
+Size 4096 GPU memcpy: 0.144384 ms
+Size 4096 naive GPU: 0.902144 ms
+Size 4096 shmem GPU: 0.117760 ms
+Size 4096 optimal GPU: 0.110592 ms
+
